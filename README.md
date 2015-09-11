@@ -27,7 +27,7 @@ I copied the interfaces structure and the standard algorithms and adapted it wit
 	LucentVisible	returns whether this tile is lucent or not. If not the line of sight is interrupted by this tile 
 
 ## Rendering
-The rendering is not in scope of this packages. Personally I prefer the entity component systems in game design, where the data/object model is separated from the processing and rendering. You can find rendering code in the example in the TestClient class. I prefer to use images for the tile rendering instead of painting polygons.
+The rendering is not in scope of this packages. Personally I prefer the entity component systems in game design, where the data/object model is separated from the processing and rendering. You can find rendering code in the example in the GuiTest class. I prefer to use images for the tile rendering instead of painting polygons.
 
 ## Example and test classes
-I took over the test cases from Amil Patel and added a test user for an example interface to show example code when using this package. You can find the class TestClient in the main package.
+I took over the test cases from Amil Patel and added a test for an example interface to show example code when using this package. You can find the class GuiTest in the main package.
