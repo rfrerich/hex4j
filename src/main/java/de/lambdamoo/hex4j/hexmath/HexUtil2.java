@@ -1,12 +1,12 @@
 package de.lambdamoo.hex4j.hexmath;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javafx.scene.shape.Polygon;
 import de.lambdamoo.hex4j.hexmath.layout.HexLayout;
-import de.lambdamoo.hex4j.hexmath.layout.HexLayout.Layout;
-import de.lambdamoo.hex4j.hexmath.layout.HexLayout.Orientation;
+import de.lambdamoo.hex4j.hexmath.layout.HexLayout.Direction;
 import de.lambdamoo.hex4j.hexmath.obj.Cube;
 import de.lambdamoo.hex4j.hexmath.obj.FractionalCube;
 import de.lambdamoo.hex4j.hexmath.obj.FractionalHex;
@@ -80,8 +80,16 @@ public class HexUtil2 {
 		return cubeDirections.get(direction.ordinal());
 	}
 
+	public static Cube cubeDirection(int direction) {
+		return cubeDirections.get(direction);
+	}
+
 	public static List<Cube> cubeDirections() {
 		return cubeDirections;
+	}
+
+	public static Cube cubeNeighbor(Cube cube, int direction) {
+		return add(cube, cubeDirection(direction));
 	}
 
 	public static Hex hexDirection(HexLayout.Direction direction) {
@@ -106,6 +114,10 @@ public class HexUtil2 {
 
 	public static Offset add(Offset a, Offset b) {
 		return new Offset(a.col + b.col, a.row + b.row);
+	}
+
+	public static Cube add(Cube a, Cube b) {
+		return new Cube(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
 
 	public static Cube subtract(Cube a, Cube b) {
@@ -141,7 +153,43 @@ public class HexUtil2 {
 		return result;
 	}
 
-	public static List<Cube> cubeLineDraw(Cube a, Cube b) {
+	/**
+	 * This method returns all Cubes that are visible / in a radius from the
+	 * center
+	 * 
+	 * @param center
+	 * @param radius
+	 * @param nonVisibleCubes
+	 * @return
+	 */
+	public static List<Cube> cubeVisible(Cube center, int radius, List<Cube> nonVisibleCubes) {
+		List<Cube> list = cubeSpiral(center, radius);
+		List<Cube> listRemove = new ArrayList<Cube>(5);
+		for (Cube cube : list) {
+			if (cube.x == 6 && cube.y == -6) {
+				int df = 0;
+			}
+			List<Cube> line = cubeLine(center, cube);
+			for (Cube cubeLine : line) {
+				if (nonVisibleCubes.contains(cubeLine)) {
+					// remove from result list
+					listRemove.add(cube);
+					break;
+				}
+			}
+		}
+		list.removeAll(listRemove);
+		return list;
+	}
+
+	/**
+	 * This method returns a list of Cubes between Cube a and b in a aline.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static List<Cube> cubeLine(Cube a, Cube b) {
 		int N = distance(a, b);
 		double partLine = 1.0 / N;
 		List<Cube> result = new ArrayList<Cube>(N);
@@ -406,6 +454,29 @@ public class HexUtil2 {
 			result.add(h);
 		}
 		return result;
+	}
+
+	public static List<Cube> cubeSpiral(Cube center, int radius) {
+		List<Cube> result = new ArrayList<>(20);
+		for (int i = 0; i < radius; i++) {
+			result.addAll(cubeRing(center, i));
+		}
+		return result;
+	}
+
+	public static List<Cube> cubeRing(Cube center, int radius) {
+		List<Cube> results = new ArrayList<Cube>();
+		Cube cube = center;
+		for (int i = 0; i < radius; i++) {
+			cube = add(cube, cubeDirection(4));
+		}
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < radius; j++) {
+				results.add(cube);
+				cube = cubeNeighbor(cube, i);
+			}
+		}
+		return results;
 	}
 
 	public static boolean hexInBoundary(Hex hex, Offset min, Offset max, HexLayout.Layout layout, HexLayout.Orientation orient) {

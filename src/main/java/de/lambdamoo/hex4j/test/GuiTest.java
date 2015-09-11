@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -137,11 +139,26 @@ class MyScene {
 		renderMap(canvasPane.getCanvas().getGraphicsContext2D(), tilemap);
 	}
 
+	private boolean shiftDown = false;
+
 	public void init(Stage primaryStage) throws Exception {
 		BorderPane root = new BorderPane();
+		root.setTop(new Label("Press SHIFT-key for line of sight with radius = 4"));
 		root.setCenter(canvasPane);
 		root.setBottom(statusLabel);
 		Scene scene = new Scene(root);
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				shiftDown = event.getCode() == KeyCode.SHIFT;
+			}
+		});
+		scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				shiftDown = false;
+			}
+		});
 
 		primaryStage.setScene(scene);
 		canvasPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -224,8 +241,8 @@ class MyScene {
 			@Override
 			public boolean isBlocked(Hex object) {
 				Offset off = HexUtil2.hex2Offset(object, hexMap.getHexLayout().getLayout(), hexMap.getHexLayout().getOrientation());
-				for (Point tile : blockedTiles) {
-					if ((int) tile.x == off.col && (int) tile.y == off.row) {
+				for (Offset tile : blockedTilesOffset) {
+					if (tile == off) {
 						return true;
 					}
 				}
@@ -236,12 +253,16 @@ class MyScene {
 		offAStar = new AStarFinder<Hex>(offsetProd, new DistanceHexEstimator());
 
 		// initialize blocked tiles
-		blockedTiles.add(new Point(5, 5));
-		blockedTiles.add(new Point(4, 5));
-		blockedTiles.add(new Point(3, 5));
-		blockedTiles.add(new Point(6, 6));
-		blockedTiles.add(new Point(2, 2));
-		blockedTiles.add(new Point(6, 3));
+		blockedTilesOffset.add(new Offset(5, 5));
+		blockedTilesOffset.add(new Offset(4, 5));
+		blockedTilesOffset.add(new Offset(3, 5));
+		blockedTilesOffset.add(new Offset(6, 6));
+		blockedTilesOffset.add(new Offset(2, 2));
+		blockedTilesOffset.add(new Offset(6, 3));
+		for (Offset off : blockedTilesOffset) {
+			Cube cube = HexUtil2.offset2Cube(off, hexMap.getHexLayout().getLayout(), hexMap.getHexLayout().getOrientation());
+			blockedTilesCubes.add(cube);
+		}
 	}
 
 	private TileMap tilemap;
@@ -250,7 +271,8 @@ class MyScene {
 	 * Helper list for storing blocked tiles. Normally you should have this
 	 * information in the tile itself.
 	 */
-	private List<Point> blockedTiles = new ArrayList<Point>();
+	private List<Offset> blockedTilesOffset = new ArrayList<Offset>();
+	private List<Cube> blockedTilesCubes = new ArrayList<Cube>();
 
 	/**
 	 * This method is invoked every pulse. It should finish very fast to avoid
@@ -263,6 +285,7 @@ class MyScene {
 	 * @throws Exception
 	 */
 	private void renderMap(GraphicsContext gc, TileMap map) throws Exception {
+		long time = System.currentTimeMillis();
 		gc.clearRect(0, 0, canvasPane.getCanvas().getWidth(), canvasPane.getCanvas().getHeight());
 		TileMapLayer layer = tilemap.getMapLayers().get("background");
 
@@ -312,13 +335,25 @@ class MyScene {
 
 		// fill the blocked tiles black
 		gc.setFill(Color.BLACK);
-		for (Point tile : blockedTiles) {
+		for (Offset offTile : blockedTilesOffset) {
 			Point p = hexMap.getHexLayout().hex2Pixel(
-					HexUtil2.offset2Hex(new Offset((int) tile.x, (int) tile.y), hexMap.getHexLayout().getLayout(), hexMap.getHexLayout()
-							.getOrientation()));
+					HexUtil2.offset2Hex(offTile, hexMap.getHexLayout().getLayout(), hexMap.getHexLayout().getOrientation()));
 			List<Point> points = HexUtil2.hexCorners(hexMap.getHexLayout().getOrientation(), p, hexMap.getHexLayout().getEdgeSize());
 			fillPolygon(gc, points, 0, 0);
 		}
+
+		// render the line of sight
+		if (shiftDown) {
+			gc.setFill(Color.AQUA);
+			List<Cube> list = HexUtil2.cubeVisible(HexUtil2.hex2Cube(mouseHex), 10, blockedTilesCubes);
+			for (Cube cube : list) {
+				Point p = hexMap.getHexLayout().hex2Pixel(HexUtil2.cube2Hex(cube));
+				List<Point> points = HexUtil2.hexCorners(hexMap.getHexLayout().getOrientation(), p, hexMap.getHexLayout().getEdgeSize());
+				fillPolygon(gc, points, 0, 0);
+			}
+		}
+		time = System.currentTimeMillis() - time;
+		// System.out.println(time);
 	}
 
 	/**
@@ -389,10 +424,11 @@ class MyScene {
 		String text = eve.getX() + "/" + eve.getY();
 		FractionalHex endHexFrac = hexMap.getHexLayout().pixel2Hex(new Point(eve.getX(), eve.getY()));
 		Hex hex = HexUtil2.hexRound(endHexFrac);
-		text += "   " + hex.toString();
+		text += "   hex=" + hex.toString();
 		Cube cube = HexUtil2.hex2Cube(hex);
+		text += "  cube=" + cube.toString();
 		Offset coo = HexUtil2.cube2Offset(cube, hexMap.getHexLayout().getLayout(), hexMap.getHexLayout().getOrientation());
-		text += "   " + coo.toString();
+		text += "   off=" + coo.toString();
 		Point poi = hexMap.getHexLayout().hex2Pixel(hex);
 		text += "  " + poi.toString();
 		return text;
