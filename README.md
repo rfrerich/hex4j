@@ -7,9 +7,9 @@ The main objective is to decouple the different parts of game processing:
 - pathfinding, line of sight, etc.
 
 ##Tile (from simpletmx)
-- I copied the classes to handle the data/object-model and the reading of TMX-files from XXX. I added variables to the data classes and added few helper class/methods to handle and load the images that are referenced in the TMX-files.
+- I copied the classes to handle the data/object-model and the reading of TMX-files. I added variables to the data classes and added few helper class/methods to handle and load the images that are referenced in the TMX-files.
 
-## Amit Patels cube logic
+## hexmath (from Amit Patels cube logic)
 I copied the example code for the implementation from Amit Patels web site and adapted it to instance and static class methhods. Additionally I took over some code for Tiled file handling and few search algorithms and added it to other sub packages 
 
 - HexLayout: this is the class for holding the layout attributes like orientation and EVEN- or ODD-layout. I added all methods to this class, which need the orientation or layout variables to do the calculation.
@@ -18,8 +18,8 @@ I copied the example code for the implementation from Amit Patels web site and a
 
 - HexMap: This class stores a tile map, the images and the HexLayout. There is no storage of hex fields, because the tile and tileset information comes from the TMX-files in offset coordinates (col/row). The hex math is only necessary to do the calculations, where the Offset class references the col/row (or x/y) of the tiles.
 
-## Search algorithms
-I copied the interfaces structure and the standard algorithms from ... and adapted it with the usage of the above interfaces, so this  is de-coupled from the hex math and tiles.
+## Search algorithms (from jf-hw-performance)
+I copied the interfaces structure and the standard algorithms and adapted it with the usage of the above interfaces, so this  is de-coupled from the hex math and tiles. Additionally i re-implemented the AStar-algorithm the way it is described in wikipedia.
 
 - Finder: The finder class is de-coupled from the other components by three new interfaces: 
 	SuccessorProducer returns the successors of a node in the pathfinding graph
