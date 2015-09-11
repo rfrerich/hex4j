@@ -1,10 +1,12 @@
 # hex4j
-This is a java implementation of the algorithms and the cube logic from Amit Patels "Hex Grids Implementation" site. I made few additions and added code for processing of Tiled TMX-files and search algorithms. The main objective is to decouple the different parts of game processing: 
+This is a java implementation of the algorithms and the cube logic from Amit Patels "Hex Grids Implementation" site. I made few additions and added code for processing of Tiled TMX-files from Kevin Kelley and his project "simpletmx" (https://code.google.com/p/simpletmx/) and search algorithms from zeroturnaround and his project "jf-hw-performance" (https://github.com/zeroturnaround/jf-hw-performance). 
+
+The main objective is to decouple the different parts of game processing: 
 - hex math
 - map and tiles
 - pathfinding, line of sight, etc.
 
-##Tiled
+##Tile (from simpletmx)
 - I copied the classes to handle the data/object-model and the reading of TMX-files from XXX. I added variables to the data classes and added few helper class/methods to handle and load the images that are referenced in the TMX-files.
 
 ## Amit Patels cube logic
