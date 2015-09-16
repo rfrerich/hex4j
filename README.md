@@ -10,7 +10,7 @@ The main objective is to decouple the different parts of game processing:
 I copied the classes to handle the data/object-model and the reading of TMX-files. I added variables to the data classes and added few helper class/methods to handle and load the images that are referenced in the TMX-files.
 
 ## hexmath (from Amit Patels cube logic)
-I copied the example code for the implementation from Amit Patels web site and adapted it to instance and static class methhods. Additionally I took over some code for Tiled file handling and few search algorithms and added it to other sub packages 
+I copied the example code for the implementation from Amit Patels web site and adapted it to instance and static class methhods. Additionally I took over some code for Tiled file handling and added it to other sub packages 
 
 - HexLayout: this is the class for holding the layout attributes like orientation and EVEN- or ODD-layout. I added all methods to this class, which need the orientation or layout variables to do the calculation.
 
