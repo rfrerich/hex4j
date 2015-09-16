@@ -7,6 +7,7 @@ import de.lambdamoo.hex4j.hexmath.HexUtil2;
 import de.lambdamoo.hex4j.hexmath.layout.HexMap;
 import de.lambdamoo.hex4j.hexmath.obj.Hex;
 import de.lambdamoo.hex4j.hexmath.obj.Offset;
+import de.lambdamoo.hex4j.search.checker.BlockedChecker;
 
 public class OffsetProducer implements SuccessorProducer<Hex> {
 

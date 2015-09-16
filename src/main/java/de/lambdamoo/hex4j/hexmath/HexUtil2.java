@@ -1,12 +1,10 @@
 package de.lambdamoo.hex4j.hexmath;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javafx.scene.shape.Polygon;
 import de.lambdamoo.hex4j.hexmath.layout.HexLayout;
-import de.lambdamoo.hex4j.hexmath.layout.HexLayout.Direction;
 import de.lambdamoo.hex4j.hexmath.obj.Cube;
 import de.lambdamoo.hex4j.hexmath.obj.FractionalCube;
 import de.lambdamoo.hex4j.hexmath.obj.FractionalHex;
@@ -14,6 +12,7 @@ import de.lambdamoo.hex4j.hexmath.obj.Hex;
 import de.lambdamoo.hex4j.hexmath.obj.Offset;
 import de.lambdamoo.hex4j.hexmath.obj.Point;
 import de.lambdamoo.hex4j.search.Finder;
+import de.lambdamoo.hex4j.search.checker.LucentChecker;
 
 public class HexUtil2 {
 	private static List<Cube> cubeDirections = new ArrayList<Cube>(6);
@@ -172,6 +171,35 @@ public class HexUtil2 {
 			List<Cube> line = cubeLine(center, cube);
 			for (Cube cubeLine : line) {
 				if (nonVisibleCubes.contains(cubeLine)) {
+					// remove from result list
+					listRemove.add(cube);
+					break;
+				}
+			}
+		}
+		list.removeAll(listRemove);
+		return list;
+	}
+
+	/**
+	 * This method returns all Cubes that are visible / in a radius from the
+	 * center
+	 * 
+	 * @param center
+	 * @param radius
+	 * @param nonVisibleCubes
+	 * @return
+	 */
+	public static List<Cube> cubeVisible(Cube center, int radius, LucentChecker<Cube> lucentChecker) {
+		List<Cube> list = cubeSpiral(center, radius);
+		List<Cube> listRemove = new ArrayList<Cube>(5);
+		for (Cube cube : list) {
+			if (cube.x == 6 && cube.y == -6) {
+				int df = 0;
+			}
+			List<Cube> line = cubeLine(center, cube);
+			for (Cube cubeLine : line) {
+				if (!lucentChecker.isLucent(cubeLine)) {
 					// remove from result list
 					listRemove.add(cube);
 					break;

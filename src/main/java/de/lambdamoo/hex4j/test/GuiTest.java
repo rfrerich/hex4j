@@ -28,9 +28,9 @@ import de.lambdamoo.hex4j.hexmath.obj.FractionalHex;
 import de.lambdamoo.hex4j.hexmath.obj.Hex;
 import de.lambdamoo.hex4j.hexmath.obj.Offset;
 import de.lambdamoo.hex4j.hexmath.obj.Point;
+import de.lambdamoo.hex4j.search.checker.BlockedChecker;
 import de.lambdamoo.hex4j.search.estimator.DistanceHexEstimator;
 import de.lambdamoo.hex4j.search.finder.AStarFinder;
-import de.lambdamoo.hex4j.search.producer.BlockedChecker;
 import de.lambdamoo.hex4j.search.producer.OffsetProducer;
 import de.lambdamoo.hex4j.tile.core.Tile;
 import de.lambdamoo.hex4j.tile.core.TileMap;
@@ -143,7 +143,7 @@ class MyScene {
 
 	public void init(Stage primaryStage) throws Exception {
 		BorderPane root = new BorderPane();
-		root.setTop(new Label("Press SHIFT-key for line of sight with radius = 4"));
+		root.setTop(new Label("Press SHIFT-key for line of sight with radius = 5"));
 		root.setCenter(canvasPane);
 		root.setBottom(statusLabel);
 		Scene scene = new Scene(root);
@@ -242,7 +242,7 @@ class MyScene {
 			public boolean isBlocked(Hex object) {
 				Offset off = HexUtil2.hex2Offset(object, hexMap.getHexLayout().getLayout(), hexMap.getHexLayout().getOrientation());
 				for (Offset tile : blockedTilesOffset) {
-					if (tile == off) {
+					if (tile.equals(off)) {
 						return true;
 					}
 				}
@@ -345,7 +345,8 @@ class MyScene {
 		// render the line of sight
 		if (shiftDown) {
 			gc.setFill(Color.AQUA);
-			List<Cube> list = HexUtil2.cubeVisible(HexUtil2.hex2Cube(mouseHex), 10, blockedTilesCubes);
+			// as an alternative, you could use the LucentChecker interface
+			List<Cube> list = HexUtil2.cubeVisible(HexUtil2.hex2Cube(mouseHex), 5, blockedTilesCubes);
 			for (Cube cube : list) {
 				Point p = hexMap.getHexLayout().hex2Pixel(HexUtil2.cube2Hex(cube));
 				List<Point> points = HexUtil2.hexCorners(hexMap.getHexLayout().getOrientation(), p, hexMap.getHexLayout().getEdgeSize());

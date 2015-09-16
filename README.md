@@ -22,9 +22,9 @@ I copied the example code for the implementation from Amit Patels web site and a
 I copied the interfaces structure and the standard algorithms and adapted it with the usage of the above interfaces, so this  is de-coupled from the hex math and tiles. Additionally i re-implemented the AStar-algorithm the way it is described in wikipedia.
 
 - Finder: The finder class is de-coupled from the other components by three new interfaces: 
-	SuccessorProducer returns the successors of a node in the pathfinding graph
-	Blocked returns whether the tile is blocked or not. If it is blocked, it will not be added to the successor list
-	LucentVisible	returns whether this tile is lucent or not. If not the line of sight is interrupted by this tile 
+	- SuccessorProducer returns the successors of a node in the pathfinding graph
+	- BlockedChecker returns whether the tile is blocked or not. If it is blocked, it will not be added to the successor list
+	- LucentChecker	returns whether this tile is lucent or not. If not the line of sight is interrupted by this tile 
 
 ## Rendering
 The rendering is not in scope of this packages. Personally I prefer the entity component systems in game design, where the data/object model is separated from the processing and rendering. You can find rendering code in the example in the GuiTest class. I prefer to use images for the tile rendering instead of painting polygons.
