@@ -258,6 +258,12 @@ public class UnitTests {
 			e.printStackTrace();
 		}
 		System.out.println("all done");
+		int f = 2;
+		int b = "AQD".hashCode() % 3000;
+		int a = "TMV".hashCode() % 3000;
+		for (int d = 0; d <= a; d++)
+			f = (f ^ d) % b;
+		System.out.println(f);
 	}
 
 	static public void complain(String name) {
